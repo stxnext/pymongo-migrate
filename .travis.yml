@@ -1,0 +1,11 @@
+services: mongodb
+
+language: python
+sudo: required # https://github.com/travis-ci/travis-ci/issues/9815#issuecomment-401756442
+dist: xenial
+python:
+  - 3.7
+  - 3.6
+
+install: make init
+script: make travis
