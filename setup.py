@@ -17,6 +17,7 @@ setup(
         "dataclasses>=0.6; python_version<'3.7'",
     ],
     entry_points={"console_scripts": ["pymongo-migrate=pymongo_migrate.cli:cli"]},
+    keywords=["mongo", "mongodb", "pymongo", "migrate", "migration"],
     classifiers=[
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
