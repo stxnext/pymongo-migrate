@@ -3,7 +3,7 @@ from functools import wraps
 import click
 
 from pymongo_migrate.graph_draw import dump
-from pymongo_migrate.main import MongoMigrate
+from pymongo_migrate.mongo_migrate import MongoMigrate
 
 
 @click.group()

@@ -1,6 +1,6 @@
 import freezegun
 
-from pymongo_migrate.main import dt
+from pymongo_migrate.mongo_migrate import dt
 
 
 def test_get_migrations(mongo_migrate):
