@@ -9,6 +9,7 @@ flake8 = "*"
 isort = "*"
 pytest = "*"
 freezegun = "*"
+bandit = "*"
 
 [packages]
 pymongo-migrate = {editable = true,path = "."}

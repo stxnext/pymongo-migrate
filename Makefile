@@ -8,6 +8,7 @@ format:
 	$(run) isort -rc .
 	$(run) black .
 	$(run) flake8 .
+	$(run) bandit -c .bandit.yml -r .
 
 test:
 	docker-compose up -d mongo
@@ -27,4 +28,5 @@ travis:
 	$(run) isort -rc -c .
 	$(run) black --check .
 	$(run) flake8 .
+	$(run) bandit -c .bandit.yml -r .
 	$(run) pytest

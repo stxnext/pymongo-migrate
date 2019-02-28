@@ -18,7 +18,8 @@ def mongo_url():
 
 @pytest.fixture
 def db_name():
-    return f"test_{random.randint(100, 10000000)}"
+    random_id = random.randint(100, 10_000_000)  # nosec
+    return f"test_{random_id}"
 
 
 @pytest.fixture
