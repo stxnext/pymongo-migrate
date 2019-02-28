@@ -4,7 +4,7 @@ setup(
     name="pymongo-migrate",
     version="1.0.0",
     description="MongoDB data migration tool in Python",
-    url="https://github.com/rooterkyberian/pymongo-migrate",
+    url="https://github.com/stxnext/pymongo-migrate",
     license="Apache",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
