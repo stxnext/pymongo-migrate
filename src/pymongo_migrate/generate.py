@@ -37,8 +37,7 @@ def generate_migration_module(
     dependencies = list(dependencies)
 
     content = MIGRATION_MODULE_TMPL.format(
-        name=name,
-        description=description, dependencies=dependencies
+        name=name, description=description, dependencies=dependencies
     )
     fp.write(content)
 

@@ -24,7 +24,7 @@ def test_downgrade(mongo_migrate):
 
 
 def test_generate(mongo_migrate, tmp_path):
-    tmp_migrations_path = tmp_path / 'migrations'
+    tmp_migrations_path = tmp_path / "migrations"
     tmp_migrations_path.mkdir()
     mongo_migrate.migrations_dir = str(tmp_migrations_path)
     mongo_migrate.generate()

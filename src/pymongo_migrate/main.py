@@ -6,8 +6,8 @@ from typing import Optional
 
 import pymongo
 from bson import CodecOptions
-from pymongo_migrate.generate import generate_migration_module_in_dir
 
+from pymongo_migrate.generate import generate_migration_module_in_dir
 from pymongo_migrate.loader import load_module_migrations
 from pymongo_migrate.migrations import Migration, MigrationsGraph
 
@@ -150,14 +150,11 @@ class MongoMigrate:
             if migration.name == migration_name:
                 break
 
-    def generate(self, name: str='', description: str =''):
+    def generate(self, name: str = "", description: str = ""):
         last_migration_name = None
         for migration in self.get_migrations():
             last_migration_name = migration.name
         dependencies = [last_migration_name] if last_migration_name else []
         generate_migration_module_in_dir(
-            self.migrations_path,
-            name=name,
-            description=name,
-            dependencies=dependencies,
+            self.migrations_path, name=name, description=name, dependencies=dependencies
         )
