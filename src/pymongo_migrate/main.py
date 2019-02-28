@@ -136,18 +136,22 @@ class MongoMigrate:
         """
         self._check_for_migration(migration_name)
         for migration in reversed(list(self.get_migrations())):
+            if migration.name == migration_name:
+                break
             migration_state = self.get_state(migration)
+            if not migration_state.applied:
+                LOGGER.debug("Migration %r not yet applied, skipping")
+                continue
             LOGGER.info("Running downgrade migration %r", migration.name)
             migration.downgrade(self.db)
             migration_state.applied = None
             self.set_state(migration_state)
-            if migration.name == migration_name:
-                break
 
     def generate(self, name: str = "", **kwargs):
         last_migration_name = None
         for migration in self.get_migrations():
             last_migration_name = migration.name
+        self.migrations_path.mkdir(exist_ok=True)
         dependencies = [last_migration_name] if last_migration_name else []
         generate_migration_module_in_dir(
             self.migrations_path,

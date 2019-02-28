@@ -23,6 +23,11 @@ def db_name():
 
 
 @pytest.fixture
+def db_uri(mongo_url, db_name):
+    return f"{mongo_url}{db_name}"
+
+
+@pytest.fixture
 def db(mongo_url, db_name):
     client = pymongo.MongoClient(mongo_url)
     yield client[db_name]
@@ -38,10 +43,13 @@ def db_collection(db):
     )
 
 
+@pytest.fixture()
+def migrations_dir():
+    return str(TEST_DIR / "migrations")
+
+
 @pytest.fixture
-def mongo_migrate(mongo_url, db_name, db):
-    mm = MongoMigrate(
-        mongo_uri=f"{mongo_url}{db_name}", migrations_dir=str(TEST_DIR / "migrations")
-    )
+def mongo_migrate(db_uri, db_name, db, migrations_dir):
+    mm = MongoMigrate(mongo_uri=db_uri, migrations_dir=migrations_dir)
     yield mm
     mm.client.close()

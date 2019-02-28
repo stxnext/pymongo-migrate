@@ -8,6 +8,28 @@ Since mongodb is schema-less most of the time you can do without data migrations
 Sometimes tho you want to create some new entities, or migrate old data instead adding another IF statement to your code.
 This is where `pymongo-migrate` comes in.
 
+## Usage
+
+    Usage: pymongo-migrate [OPTIONS] COMMAND [ARGS]...
+
+    Options:
+      --help  Show this message and exit.
+
+    Commands:
+      downgrade  apply necessary downgrades to reach target migration
+      graph
+      migrate    automagically apply necessary upgrades or downgrades to reach
+                 target migration
+      show       show migrations and their status
+      upgrade    apply necessary upgrades to reach target migration
+
+
+The most used command will be `migrate`, which works can be called like this:
+
+    $ pymongo-migrate migrate -u 'mongodb://localhost/test_db' -m tests/migrations
+
+Use `pymongo-migrate command --help` to learn more about particular command.
+
 ## Alternatives
 
 ATM there seem only two active python projects like this:

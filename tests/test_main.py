@@ -28,7 +28,6 @@ def test_downgrade(mongo_migrate):
 @freezegun.freeze_time("2019-02-25 01:13:56")
 def test_generate(mongo_migrate, tmp_path):
     tmp_migrations_path = tmp_path / "migrations"
-    tmp_migrations_path.mkdir()
     mongo_migrate.migrations_dir = str(tmp_migrations_path)
     mongo_migrate.generate()
     files = {f.name: f for f in tmp_migrations_path.iterdir()}
