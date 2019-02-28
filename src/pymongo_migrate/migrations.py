@@ -10,7 +10,7 @@ from pymongo.database import Database
 @dataclass
 class Migration:
     name: str
-    dependencies: List[str] = field(default=list)  # type: ignore
+    dependencies: List[str] = field(default_factory=list)
 
     @property
     def initial(self):
