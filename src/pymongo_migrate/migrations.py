@@ -1,7 +1,8 @@
+import datetime
 from collections import defaultdict
 from dataclasses import dataclass, field
 from types import ModuleType
-from typing import Dict, List, Set
+from typing import Dict, List, Optional, Set
 
 from pymongo.database import Database
 
@@ -9,7 +10,7 @@ from pymongo.database import Database
 @dataclass
 class Migration:
     name: str
-    dependencies: List[str] = field(default=list)
+    dependencies: List[str] = field(default=list)  # type: ignore
 
     @property
     def initial(self):
@@ -22,10 +23,23 @@ class Migration:
         raise NotImplementedError()
 
 
-class ModuleMigrationWrapper(Migration):
+class MigrationModuleType(ModuleType):
+    """Migration Module Type stub"""
+
+    name: str
+    dependencies: List[str]
+
+    def upgrade(self, db: Database):
+        raise NotImplementedError()
+
+    def downgrade(self, db: Database):
+        raise NotImplementedError()
+
+
+class MigrationModuleWrapper(Migration):
     """Use python module as a migration"""
 
-    def __init__(self, name: str, module: ModuleType = None):
+    def __init__(self, name: str, module: MigrationModuleType):
         self.name = name
         self.module = module
         assert self.name == getattr(self.module, "name", name)
@@ -77,3 +91,9 @@ class MigrationsGraph:
         for next_migration_name in sorted(self.required_by.get(migration.name, [])):
             next_migration = self.migrations[next_migration_name]
             yield from self._get_next(next_migration)
+
+
+@dataclass
+class MigrationState:
+    name: str
+    applied: Optional[datetime.datetime] = None

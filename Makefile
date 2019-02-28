@@ -8,6 +8,7 @@ format:
 	$(run) isort -rc .
 	$(run) black .
 	$(run) flake8 .
+	$(run) mypy src
 	$(run) bandit -c .bandit.yml -r .
 
 test:
@@ -28,5 +29,6 @@ travis:
 	$(run) isort -rc -c .
 	$(run) black --check .
 	$(run) flake8 .
+	$(run) mypy src
 	$(run) bandit -c .bandit.yml -r .
 	$(run) pytest

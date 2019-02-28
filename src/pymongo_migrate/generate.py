@@ -1,7 +1,7 @@
 import datetime
 import re
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 MIGRATION_MODULE_TMPL = '''\
 """
@@ -32,9 +32,9 @@ def generate_migration_module(
     fp,
     name: str,
     description: str = "Migration description here!",
-    dependencies: List[str] = (),
+    dependencies: Optional[List[str]] = None,
 ):
-    dependencies = list(dependencies)
+    dependencies = dependencies or []
 
     content = MIGRATION_MODULE_TMPL.format(
         name=name, description=description, dependencies=dependencies
@@ -53,4 +53,4 @@ def generate_migration_module_in_dir(
             name = f"{name}_{slugify(description)}"
         name = name[:MAX_NAME_LEN]
     with (migration_dir / f"{name}.py").open("w") as f:
-        generate_migration_module(f, name=name, *args, **kwargs)
+        generate_migration_module(f, name=name, *args, **kwargs)  # type: ignore

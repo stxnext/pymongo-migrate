@@ -9,26 +9,17 @@ from bson import CodecOptions
 
 from pymongo_migrate.generate import generate_migration_module_in_dir
 from pymongo_migrate.loader import load_module_migrations
-from pymongo_migrate.migrations import Migration, MigrationsGraph
+from pymongo_migrate.migrations import Migration, MigrationsGraph, MigrationState
 
 LOGGER = logging.getLogger(__name__)
 
 
-def dt(*args) -> datetime:
+def dt(*args) -> datetime.datetime:
     """Create timezone-aware UTC datetime."""
     if args:
-        return datetime.datetime(*args, tzinfo=datetime.timezone.utc)
+        return datetime.datetime(*args, tzinfo=datetime.timezone.utc)  # type: ignore
     else:
         return datetime.datetime.now(datetime.timezone.utc)
-
-
-@dataclass
-class MigrationStatus:
-    name: str
-    applied: Optional[datetime.datetime] = None
-
-    def set_applied(self):
-        self.applied = datetime.datetime.now(datetime.timezone.utc)
 
 
 def _serialize(obj):
@@ -72,18 +63,20 @@ class MongoMigrate:
     def get_migrations(self):
         yield from self.graph
 
-    def get_status(self, migration: Migration) -> MigrationStatus:
+    def get_state(self, migration: Migration) -> MigrationState:
         data = self.db_collection.find_one({"name": migration.name})
         if data:
-            return _deserialize(data, MigrationStatus)
-        return MigrationStatus(name=migration.name)
+            return _deserialize(data, MigrationState)
+        return MigrationState(name=migration.name)
 
-    def set_status(self, status: MigrationStatus):
+    def set_state(self, status: MigrationState):
         self.db_collection.replace_one(
             {"name": status.name}, _serialize(status), upsert=True
         )
 
-    def _check_for_migration(self, migration_name: str):
+    def _check_for_migration(
+        self, migration_name: Optional[str]
+    ) -> Optional[Migration]:
         if migration_name is None:
             return None
         migration = self.graph.migrations.get(migration_name)
@@ -103,9 +96,10 @@ class MongoMigrate:
         if migration_name is None:
             self.logger.debug("Migration target not specified, assuming upgrade")
             self.upgrade()
-        migration = self._check_for_migration(migration_name, required=True)
-        migration_status = self.get_status(migration)
-        if migration_status.applied:
+        migration = self._check_for_migration(migration_name)
+        assert migration, "No matching migration, something went wrong"
+        migration_state = self.get_state(migration)
+        if migration_state.applied:
             self.logger.debug("Migration target already applied, assuming downgrade")
             self.downgrade(migration_name)
         else:
@@ -122,13 +116,13 @@ class MongoMigrate:
         """
         self._check_for_migration(migration_name)
         for migration in self.graph:
-            migration_status = self.get_status(migration)
-            if migration_status.applied:
+            migration_state = self.get_state(migration)
+            if migration_state.applied:
                 LOGGER.debug("Migration %r already applied, skipping")
             LOGGER.info("Running upgrade migration %r", migration.name)
             migration.upgrade(self.db)
-            migration_status.applied = dt()
-            self.set_status(migration_status)
+            migration_state.applied = dt()
+            self.set_state(migration_state)
             if migration.name == migration_name:
                 break
 
@@ -142,11 +136,11 @@ class MongoMigrate:
         """
         self._check_for_migration(migration_name)
         for migration in reversed(list(self.get_migrations())):
-            migration_status = self.get_status(migration)
+            migration_state = self.get_state(migration)
             LOGGER.info("Running downgrade migration %r", migration.name)
             migration.downgrade(self.db)
-            migration_status.applied = None
-            self.set_status(migration_status)
+            migration_state.applied = None
+            self.set_state(migration_state)
             if migration.name == migration_name:
                 break
 

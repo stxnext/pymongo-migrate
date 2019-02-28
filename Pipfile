@@ -10,6 +10,7 @@ isort = "*"
 pytest = "*"
 freezegun = "*"
 bandit = "*"
+mypy = "*"
 
 [packages]
 pymongo-migrate = {editable = true,path = "."}
