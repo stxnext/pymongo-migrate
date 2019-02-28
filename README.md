@@ -30,6 +30,15 @@ The most used command will be `migrate`, which works can be called like this:
 
 Use `pymongo-migrate command --help` to learn more about particular command.
 
+## Development & contributing to the project
+
+Contributions and raising Issues is welcome; standard netiquette rules apply.
+
+Use `pipenv install --dev` to setup the project for development.
+To format your code & test your changes run:
+
+    make check
+
 ## Alternatives
 
 ATM there seem only two active python projects like this:
@@ -41,7 +50,8 @@ So if something already existed, why then another project?
 Goals of this project, where at least one of them were not fullfilled by above:
  * tests and CI pipeline for ensuring that tool indeed works
  * keeping it usable both as standalone tool and as python dependency
- * use of modern Python version
+ * use of modern Python version (3.6 and above)
+  * which allows use of type annotations, dataclasses, f-strings and other goodies
 
 ## Inspiration and design
 
