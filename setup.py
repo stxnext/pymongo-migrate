@@ -11,6 +11,7 @@ setup(
     platforms="any",
     include_package_data=True,
     zip_safe=False,
+    python_requires=">=3.6",
     install_requires=[
         "pymongo>=3.7.2",
         "Click>=7",
