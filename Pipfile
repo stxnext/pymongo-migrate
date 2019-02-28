@@ -8,6 +8,7 @@ black = "==18.9b0"
 flake8 = "*"
 isort = "*"
 pytest = "*"
+freezegun = "*"
 
 [packages]
 pymongo-migrate = {editable = true,path = "."}

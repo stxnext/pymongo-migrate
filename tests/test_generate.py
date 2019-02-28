@@ -21,11 +21,3 @@ def test_upgrade(mongo_migrate, db_collection):
 
 def test_downgrade(mongo_migrate):
     mongo_migrate.downgrade(None)
-
-
-def test_generate(mongo_migrate, tmp_path):
-    tmp_migrations_path = tmp_path / 'migrations'
-    tmp_migrations_path.mkdir()
-    mongo_migrate.migrations_dir = str(tmp_migrations_path)
-    mongo_migrate.generate()
-    assert len(list(tmp_path.iterdir())) == 1

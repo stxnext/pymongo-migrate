@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from types import ModuleType
 from typing import Dict, List, Set
 
-from pymongo import MongoClient
+from pymongo.database import Database
 
 
 @dataclass
@@ -11,37 +11,35 @@ class Migration:
     name: str
     dependencies: List[str] = field(default=list)
 
-    client: MongoClient = None
-
     @property
     def initial(self):
         return not self.dependencies
 
-    def upgrade(self):
+    def upgrade(self, db: Database):
         raise NotImplementedError()
 
-    def downgrade(self):
+    def downgrade(self, db: Database):
         raise NotImplementedError()
 
 
 class ModuleMigrationWrapper(Migration):
     """Use python module as a migration"""
 
-    def __init__(self, name: str, module: ModuleType, client: MongoClient = None):
+    def __init__(self, name: str, module: ModuleType = None):
         self.name = name
         self.module = module
-        self.client = client
+        assert self.name == getattr(self.module, "name", name)
         super().__init__(name=name, dependencies=self.module.dependencies)
 
     @property
     def description(self):
         return self.module.__doc__
 
-    def upgrade(self):
-        self.module.upgrade(self.client.get_database())
+    def upgrade(self, db: Database):
+        self.module.upgrade(db)
 
-    def downgrade(self):
-        self.module.downgrade(self.client.get_database())
+    def downgrade(self, db: Database):
+        self.module.downgrade(db)
 
 
 class MigrationsGraph:

@@ -3,6 +3,7 @@ Initial migration
 
 Adds 1000 numbers to numbers collection.
 """
+name = "20150612230153"
 dependencies = []
 
 
