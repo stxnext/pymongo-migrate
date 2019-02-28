@@ -1,3 +1,5 @@
+import freezegun
+
 from pymongo_migrate.main import dt
 
 
@@ -23,9 +25,31 @@ def test_downgrade(mongo_migrate):
     mongo_migrate.downgrade(None)
 
 
+@freezegun.freeze_time("2019-02-25 01:13:56")
 def test_generate(mongo_migrate, tmp_path):
     tmp_migrations_path = tmp_path / "migrations"
     tmp_migrations_path.mkdir()
     mongo_migrate.migrations_dir = str(tmp_migrations_path)
     mongo_migrate.generate()
-    assert len(list(tmp_path.iterdir())) == 1
+    files = {f.name: f for f in tmp_migrations_path.iterdir()}
+    assert set(files) == {"201902011356.py"}
+    with files["201902011356.py"].open() as f:
+        content = f.read()
+        assert (
+            content
+            == '''\
+"""
+Migration description here!
+"""
+name = '201902011356'
+dependencies = ['20181123000000_gt_500']
+
+
+def upgrade(db: "pymongo.database.Database"):
+    pass
+
+
+def downgrade(db: "pymongo.database.Database"):
+    pass
+'''
+        )

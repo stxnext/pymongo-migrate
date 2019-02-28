@@ -150,11 +150,14 @@ class MongoMigrate:
             if migration.name == migration_name:
                 break
 
-    def generate(self, name: str = "", description: str = ""):
+    def generate(self, name: str = "", **kwargs):
         last_migration_name = None
         for migration in self.get_migrations():
             last_migration_name = migration.name
         dependencies = [last_migration_name] if last_migration_name else []
         generate_migration_module_in_dir(
-            self.migrations_path, name=name, description=name, dependencies=dependencies
+            self.migrations_path,
+            name=name,
+            dependencies=dependencies,
+            **{k: v for k, v in kwargs.items() if v is not None},
         )

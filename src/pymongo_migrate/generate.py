@@ -17,14 +17,14 @@ def upgrade(db: "pymongo.database.Database"):
 
 def downgrade(db: "pymongo.database.Database"):
     pass
-
 '''
 MAX_NAME_LEN = 60
 
 
 def slugify(text: str) -> str:
     text = re.sub(r"[\W_]+", "_", text)
-    text = text.encode("ascii", errors="skip").decode().lower()
+    text = text.encode("ascii", errors="ignore").decode().lower()
+    text = text.strip("_")
     return text
 
 
@@ -43,15 +43,14 @@ def generate_migration_module(
 
 
 def generate_migration_module_in_dir(
-    migration_dir: Path, name: str = "", description: str = "", *args, **kwargs
+    migration_dir: Path, name: str = "", *args, **kwargs
 ):
     now = datetime.datetime.utcnow()
     if not name:
-        name = f"{now:%Y%m%H%M%s}"
+        name = f"{now:%Y%m%H%M%S}"
+        description = kwargs.get("description")
         if description:
             name = f"{name}_{slugify(description)}"
         name = name[:MAX_NAME_LEN]
     with (migration_dir / f"{name}.py").open("w") as f:
-        generate_migration_module(
-            f, name=name, description=description, *args, **kwargs
-        )
+        generate_migration_module(f, name=name, *args, **kwargs)
