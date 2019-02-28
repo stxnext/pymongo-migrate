@@ -51,7 +51,7 @@ Goals of this project, where at least one of them were not fullfilled by above:
  * tests and CI pipeline for ensuring that tool indeed works
  * keeping it usable both as standalone tool and as python dependency
  * use of modern Python version (3.6 and above)
-  * which allows use of type annotations, dataclasses, f-strings and other goodies
+   * which allows use of type annotations, dataclasses, f-strings and other goodies
 
 ## Inspiration and design
 
