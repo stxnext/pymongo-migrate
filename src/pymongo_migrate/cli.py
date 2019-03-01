@@ -24,11 +24,18 @@ def mongo_migrate_decor(f):
 
 def mongo_migration_options(f):
     decorators = [
-        click.option("-u", "--uri", default=None, help="mongodb URI"),
+        click.option(
+            "-u",
+            "--uri",
+            default=None,
+            envvar="PYMONGO_MIGRATE_URI",
+            help="mongodb URI",
+        ),
         click.option(
             "-m",
             "--migrations",
             default=MongoMigrate.migrations_dir,
+            envvar="PYMONGO_MIGRATE_MIGRATIONS",
             help="migration script directory",
             show_default=True,
         ),
@@ -36,6 +43,7 @@ def mongo_migration_options(f):
             "-c",
             "--collection",
             default=MongoMigrate.migrations_collection,
+            envvar="PYMONGO_MIGRATE_COLLECTION",
             help="mongodb collection used for storing migration states",
             show_default=True,
         ),
