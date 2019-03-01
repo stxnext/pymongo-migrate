@@ -9,7 +9,9 @@ def load_module_migrations(
     path: Path, namespace=f"{__name__}._migrations"
 ) -> Generator[MigrationModuleWrapper, None, None]:
 
-    for module_file in path.iterdir():
+    for module_file in path.glob("*.py"):
+        if module_file.name.startswith("__"):
+            continue
         migration_name = module_file.stem
         spec = importlib.util.spec_from_file_location(
             f"{namespace}.{migration_name}", str(module_file)
