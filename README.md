@@ -3,6 +3,8 @@
 [![Build Status](https://travis-ci.org/stxnext/pymongo-migrate.svg?branch=master)](https://travis-ci.org/stxnext/pymongo-migrate)
 [![PyPI version](https://badge.fury.io/py/pymongo-migrate.svg)](https://badge.fury.io/py/pymongo-migrate)
 
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pymongo-migrate.svg)
+
 Mongodb migrations using Python.
 
 Since mongodb is schema-less most of the time you can do without data migrations.
