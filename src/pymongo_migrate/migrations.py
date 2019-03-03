@@ -83,6 +83,8 @@ class MigrationsGraph:
         """
         Iterate over migrations starting with initial one
         """
+        if not self.migrations:
+            return
         initial_migration = self.get_initial()
         yield from self._get_next(initial_migration)
 
