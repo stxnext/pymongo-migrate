@@ -53,3 +53,11 @@ def mongo_migrate(db_uri, db_name, db, migrations_dir):
     mm = MongoMigrate(mongo_uri=db_uri, migrations_dir=migrations_dir)
     yield mm
     mm.client.close()
+
+
+@pytest.fixture()
+def get_db_migrations(db_collection):
+    def getter():
+        return list(db_collection.find(projection={"_id": False}, sort=[("name", 1)]))
+
+    return getter

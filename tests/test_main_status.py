@@ -32,9 +32,8 @@ def test_get_state_when_migration_applied(mongo_migrate, db_collection, migratio
     )
 
 
-def test_set_state(mongo_migrate, db_collection, migration):
+def test_set_state(mongo_migrate, migration, get_db_migrations):
     now = dt().replace(microsecond=0)  # reduced time resolution
     mongo_migrate.set_state(MigrationState(name=migration.name, applied=now))
-    all_migrations = list(db_collection.find())
-    del all_migrations[0]["_id"]
+    all_migrations = get_db_migrations()
     assert all_migrations == [{"name": migration.name, "applied": now}]
