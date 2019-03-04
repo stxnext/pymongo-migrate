@@ -10,8 +10,8 @@ def test_generate(mongo_migrate, tmp_path):
     mongo_migrate.migrations_dir = str(tmp_migrations_path)
     mongo_migrate.generate()
     files = {f.name: f for f in tmp_migrations_path.iterdir()}
-    assert set(files) == {"201902011356.py"}
-    with files["201902011356.py"].open() as f:
+    assert set(files) == {"20190225011356.py"}
+    with files["20190225011356.py"].open() as f:
         content = f.read()
         assert (
             content
@@ -19,7 +19,7 @@ def test_generate(mongo_migrate, tmp_path):
 """
 Migration description here!
 """
-name = '201902011356'
+name = '20190225011356'
 dependencies = ['20181123000000_gt_500']
 
 
@@ -50,8 +50,8 @@ def test_generate_initial_migration(mongo_migrate_with_empty_dir, empty_migratio
     mongo_migrate = mongo_migrate_with_empty_dir
     mongo_migrate.generate()
     files = {f.name: f for f in empty_migrations_dir.iterdir()}
-    assert set(files) == {"201902040506.py"}
-    with files["201902040506.py"].open() as f:
+    assert set(files) == {"20190203040506.py"}
+    with files["20190203040506.py"].open() as f:
         content = f.read()
         assert (
             content
@@ -59,7 +59,7 @@ def test_generate_initial_migration(mongo_migrate_with_empty_dir, empty_migratio
 """
 Migration description here!
 """
-name = '201902040506'
+name = '20190203040506'
 dependencies = []
 
 

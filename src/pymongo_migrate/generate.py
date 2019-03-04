@@ -47,7 +47,7 @@ def generate_migration_module_in_dir(
 ):
     now = datetime.datetime.utcnow()
     if not name:
-        name = f"{now:%Y%m%H%M%S}"
+        name = f"{now:%Y%m%d%H%M%S}"
         description = kwargs.get("description")
         if description:
             name = f"{name}_{slugify(description)}"
