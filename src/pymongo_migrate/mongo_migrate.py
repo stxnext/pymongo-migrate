@@ -96,6 +96,7 @@ class MongoMigrate:
         if migration_name is None:
             self.logger.debug("Migration target not specified, assuming upgrade")
             self.upgrade()
+            return
         migration = self._check_for_migration(migration_name)
         assert migration, "No matching migration, something went wrong"
         migration_state = self.get_state(migration)

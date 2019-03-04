@@ -65,3 +65,10 @@ def test_upgrade_n_downgrade(mongo_migrate, db, get_db_migrations):
         {"applied": None, "name": "20181123000000_gt_500"},
     ]
     assert db.list_collection_names() == ["pymongo_migrate"]
+
+
+def test_migrate(mongo_migrate):
+    """migrate without args should work as upgrade"""
+    with patch.object(mongo_migrate, "upgrade") as upgrade_mock:
+        mongo_migrate.migrate()
+    upgrade_mock.assert_called()
