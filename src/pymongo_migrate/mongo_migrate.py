@@ -119,6 +119,7 @@ class MongoMigrate:
             migration_state = self.get_state(migration)
             if migration_state.applied:
                 LOGGER.debug("Migration %r already applied, skipping")
+                continue
             LOGGER.info("Running upgrade migration %r", migration.name)
             migration.upgrade(self.db)
             migration_state.applied = dt()

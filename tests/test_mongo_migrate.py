@@ -1,3 +1,6 @@
+from collections import defaultdict
+from unittest.mock import Mock, patch
+
 import freezegun
 
 from pymongo_migrate.mongo_migrate import dt
@@ -21,6 +24,29 @@ def test_upgrade(mongo_migrate, db, get_db_migrations):
     ]
 
     assert db.numbers_collection.count_documents({}) == 499
+
+
+@freezegun.freeze_time("2019-02-03 04:05:06")
+def test_upgrade_skip_applied(mongo_migrate, db, db_collection, get_db_migrations):
+    db_collection.insert_one(
+        {"applied": dt(2017, 10, 10, 10, 10, 10), "name": "20150612230153"}
+    )
+
+    migrations = {m.name: m for m in mongo_migrate.get_migrations()}
+    upgrade_mocks = defaultdict(Mock)
+
+    def patch_upgrade(name):
+        return patch.object(migrations[name], "upgrade", upgrade_mocks[name])
+
+    with patch_upgrade("20150612230153"), patch_upgrade("20181123000000_gt_500"):
+        mongo_migrate.upgrade()
+    upgrade_mocks["20150612230153"].assert_not_called()
+    upgrade_mocks["20181123000000_gt_500"].assert_called()
+
+    assert get_db_migrations() == [
+        {"applied": dt(2017, 10, 10, 10, 10, 10), "name": "20150612230153"},
+        {"applied": dt(2019, 2, 3, 4, 5, 6), "name": "20181123000000_gt_500"},
+    ]
 
 
 def test_downgrade(mongo_migrate, db, get_db_migrations):
