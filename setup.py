@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="pymongo-migrate",
-    version="0.9.0",
+    version="0.9.1",
     description="MongoDB data migration tool in Python",
     url="https://github.com/stxnext/pymongo-migrate",
     license="Apache",
