@@ -1,4 +1,5 @@
 from functools import wraps
+from typing import Optional
 
 import click
 
@@ -93,6 +94,13 @@ def upgrade(mongo_migrate, migration=None):
 @click.argument("migration")
 def downgrade(mongo_migrate, migration):
     mongo_migrate.downgrade(migration)
+
+
+@cli.command()
+@mongo_migration_options
+@click.argument("name", required=False)
+def generate(mongo_migrate, name: Optional[str] = None):
+    mongo_migrate.generate(name)
 
 
 @cli.command()
