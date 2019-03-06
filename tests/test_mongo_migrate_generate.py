@@ -8,10 +8,11 @@ from pymongo_migrate.mongo_migrate import MongoMigrate
 def test_generate(mongo_migrate, tmp_path):
     tmp_migrations_path = tmp_path / "migrations"
     mongo_migrate.migrations_dir = str(tmp_migrations_path)
-    mongo_migrate.generate()
+    filename = mongo_migrate.generate().name
+    assert filename == "20190225011356.py"
     files = {f.name: f for f in tmp_migrations_path.iterdir()}
-    assert set(files) == {"20190225011356.py"}
-    with files["20190225011356.py"].open() as f:
+    assert set(files) == {filename}
+    with files[filename].open() as f:
         content = f.read()
         assert (
             content
@@ -48,10 +49,11 @@ def mongo_migrate_with_empty_dir(db_uri, db_name, db, empty_migrations_dir):
 @freezegun.freeze_time("2019-02-03 04:05:06")
 def test_generate_initial_migration(mongo_migrate_with_empty_dir, empty_migrations_dir):
     mongo_migrate = mongo_migrate_with_empty_dir
-    mongo_migrate.generate()
+    filename = mongo_migrate.generate().name
+    assert filename == "20190203040506.py"
     files = {f.name: f for f in empty_migrations_dir.iterdir()}
-    assert set(files) == {"20190203040506.py"}
-    with files["20190203040506.py"].open() as f:
+    assert set(files) == {filename}
+    with files[filename].open() as f:
         content = f.read()
         assert (
             content

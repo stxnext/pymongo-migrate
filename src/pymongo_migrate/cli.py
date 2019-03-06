@@ -1,3 +1,4 @@
+import os
 from functools import wraps
 from typing import Optional
 
@@ -100,7 +101,14 @@ def downgrade(mongo_migrate, migration):
 @mongo_migration_options
 @click.argument("name", required=False)
 def generate(mongo_migrate, name: Optional[str] = None):
-    mongo_migrate.generate(name)
+    click.echo(f"Generating new migration in {mongo_migrate.migrations_dir}")
+    file_path = mongo_migrate.generate(name)
+    click.echo(
+        "Generated: "
+        + click.style(f"{file_path.parent}{os.sep}", fg="bright_black")
+        + click.style(file_path.stem, fg="green")
+        + click.style(file_path.suffix, fg="bright_black")
+    )
 
 
 @cli.command()

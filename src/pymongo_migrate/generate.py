@@ -44,7 +44,7 @@ def generate_migration_module(
 
 def generate_migration_module_in_dir(
     migration_dir: Path, name: str = "", *args, **kwargs
-):
+) -> Path:
     now = datetime.datetime.utcnow()
     if not name:
         name = f"{now:%Y%m%d%H%M%S}"
@@ -52,5 +52,7 @@ def generate_migration_module_in_dir(
         if description:
             name = f"{name}_{slugify(description)}"
         name = name[:MAX_NAME_LEN]
-    with (migration_dir / f"{name}.py").open("w") as f:
+    file_path = migration_dir / f"{name}.py"
+    with file_path.open("w") as f:
         generate_migration_module(f, name=name, *args, **kwargs)  # type: ignore
+    return file_path

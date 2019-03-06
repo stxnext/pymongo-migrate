@@ -36,12 +36,14 @@ Migration name       	Applied timestamp
 @freezegun.freeze_time("2019-02-03 04:05:06")
 def test_generate(invoker, db, db_uri, tmp_path):
     migrations_path = tmp_path / "migrations"
-    invoker(
+    result = invoker(
         ["generate", "-u", db_uri, "-m", str(migrations_path)], catch_exceptions=False
     )
+    filename = "20190203040506.py"
+    assert filename in result.stdout
     files = {f.name: f for f in migrations_path.iterdir()}
-    assert set(files) == {"20190203040506.py"}
-    with files["20190203040506.py"].open() as f:
+    assert set(files) == {filename}
+    with files[filename].open() as f:
         content = f.read()
         assert (
             content

@@ -149,13 +149,13 @@ class MongoMigrate:
             migration_state.applied = None
             self.set_state(migration_state)
 
-    def generate(self, name: str = "", **kwargs):
+    def generate(self, name: str = "", **kwargs) -> Path:
         last_migration_name = None
         for migration in self.get_migrations():
             last_migration_name = migration.name
         self.migrations_path.mkdir(exist_ok=True)
         dependencies = [last_migration_name] if last_migration_name else []
-        generate_migration_module_in_dir(
+        return generate_migration_module_in_dir(
             self.migrations_path,
             name=name,
             dependencies=dependencies,
