@@ -50,7 +50,7 @@ def migrations_dir():
 
 @pytest.fixture
 def mongo_migrate(db_uri, db_name, db, migrations_dir):
-    mm = MongoMigrate(mongo_uri=db_uri, migrations_dir=migrations_dir)
+    mm = MongoMigrate(pymongo.MongoClient(db_uri), migrations_dir=migrations_dir)
     yield mm
     mm.client.close()
 

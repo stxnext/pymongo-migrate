@@ -2,7 +2,7 @@ import datetime
 import logging
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Optional
+from typing import Iterator, Optional
 
 import pymongo
 from bson import CodecOptions
@@ -34,13 +34,12 @@ def _deserialize(data, cls):
 
 @dataclass
 class MongoMigrate:
-    mongo_uri: str  # https://docs.mongodb.com/manual/reference/connection-string/
+    client: pymongo.MongoClient
     migrations_dir: str = "./pymongo_migrations"
     migrations_collection: str = "pymongo_migrate"
     logger: logging.Logger = LOGGER
 
     def __post_init__(self):
-        self.client = pymongo.MongoClient(self.mongo_uri)
         self.graph = MigrationsGraph()
         for migration in load_module_migrations(self.migrations_path):
             self.graph.add_migration(migration)
@@ -60,7 +59,7 @@ class MongoMigrate:
             codec_options=CodecOptions(tz_aware=True, tzinfo=datetime.timezone.utc)
         )
 
-    def get_migrations(self):
+    def get_migrations(self) -> Iterator[Migration]:
         yield from self.graph
 
     def get_state(self, migration: Migration) -> MigrationState:
@@ -119,9 +118,11 @@ class MongoMigrate:
         for migration in self.graph:
             migration_state = self.get_state(migration)
             if migration_state.applied:
-                LOGGER.debug("Migration %r already applied, skipping")
+                self.logger.debug(
+                    "Migration %r already applied, skipping", migration.name
+                )
                 continue
-            LOGGER.info("Running upgrade migration %r", migration.name)
+            self.logger.info("Running upgrade migration %r", migration.name)
             migration.upgrade(self.db)
             migration_state.applied = dt()
             self.set_state(migration_state)
@@ -142,9 +143,11 @@ class MongoMigrate:
                 break
             migration_state = self.get_state(migration)
             if not migration_state.applied:
-                LOGGER.debug("Migration %r not yet applied, skipping")
+                self.logger.debug(
+                    "Migration %r not yet applied, skipping", migration.name
+                )
                 continue
-            LOGGER.info("Running downgrade migration %r", migration.name)
+            self.logger.info("Running downgrade migration %r", migration.name)
             migration.downgrade(self.db)
             migration_state.applied = None
             self.set_state(migration_state)

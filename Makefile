@@ -13,7 +13,7 @@ format:
 
 test:
 	docker-compose up -d mongo
-	$(run) pytest
+	$(run) pytest -vv
 	docker-compose down
 
 check: format test

@@ -1,8 +1,11 @@
+import logging
 import os
 from functools import wraps
+from pprint import pformat
 from typing import Optional
 
 import click
+import pymongo.monitoring
 
 from pymongo_migrate.graph_draw import dump
 from pymongo_migrate.mongo_migrate import MongoMigrate
@@ -13,11 +16,56 @@ def cli():
     pass
 
 
+class CommandLogger(pymongo.monitoring.CommandListener):
+    def __init__(self, verbose: int = 0):
+        self.verbose = verbose
+
+    def echo(self, *args, min_verbosity=1):
+        if self.verbose >= min_verbosity:
+            click.echo(*args)
+
+    def started(self, event):
+        self.echo(f"Command {event.command_name}#{event.request_id} STARTED")
+        if self.verbose >= 1:
+            self.echo(pformat(event.command), min_verbosity=1)
+
+    def succeeded(self, event):
+        self.echo(
+            f"Command {event.command_name}#{event.request_id} SUCCEEDED in {event.duration_micros}us"
+        )
+
+    def failed(self, event):
+        self.echo(
+            f"Command {event.command_name}#{event.request_id} FAILED in {event.duration_micros}us"
+        )
+
+
+def get_logger(verbose: int):
+    logger = logging.getLogger(__name__)
+
+    stream = click.get_text_stream("stdout")
+    console_handler = logging.StreamHandler(stream=stream)
+    log_formatter = logging.Formatter("%(asctime)s [%(levelname)-5.5s]  %(message)s")
+    console_handler.setFormatter(log_formatter)
+    logger.addHandler(console_handler)
+
+    if verbose > 0:
+        logger.setLevel(logging.DEBUG)
+    else:
+        logger.setLevel(logging.INFO)
+    return logger
+
+
 def mongo_migrate_decor(f):
     @wraps(f)
-    def wrap_with_client(uri, migrations, collection, *args, **kwargs):
+    def wrap_with_client(uri, migrations, collection, verbose, *args, **kwargs):
         mongo_migrate = MongoMigrate(
-            mongo_uri=uri, migrations_dir=migrations, migrations_collection=collection
+            client=pymongo.MongoClient(
+                uri, event_listeners=[CommandLogger(verbose=verbose)]
+            ),
+            migrations_dir=migrations,
+            migrations_collection=collection,
+            logger=get_logger(verbose),
         )
         return f(mongo_migrate, *args, **kwargs)
 
@@ -49,6 +97,7 @@ def mongo_migration_options(f):
             help="mongodb collection used for storing migration states",
             show_default=True,
         ),
+        click.option("-v", "--verbose", count=True),
         mongo_migrate_decor,
     ]
     for decorator in reversed(decorators):
