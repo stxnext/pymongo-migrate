@@ -7,6 +7,8 @@ python:
   - 3.7
   - 3.6
   - 3.8-dev
+allow_failures:
+  - python: 3.8-dev
 
 install: make init
 script: make travis
