@@ -3,12 +3,13 @@ services: mongodb
 language: python
 sudo: required # https://github.com/travis-ci/travis-ci/issues/9815#issuecomment-401756442
 dist: xenial
-python:
-  - 3.7
-  - 3.6
-  - 3.8-dev
-allow_failures:
+matrix:
+  include:
+  - python: 3.6
+  - python: 3.7
   - python: 3.8-dev
+  allow_failures:
+    - python: 3.8-dev
 
 install: make init
 script: make travis
