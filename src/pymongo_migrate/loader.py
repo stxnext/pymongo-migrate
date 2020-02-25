@@ -1,8 +1,8 @@
 import importlib.util
 from pathlib import Path
-from typing import Generator
+from typing import Generator, cast
 
-from pymongo_migrate.migrations import MigrationModuleWrapper
+from pymongo_migrate.migrations import MigrationModuleType, MigrationModuleWrapper
 
 
 def load_module_migrations(
@@ -18,6 +18,6 @@ def load_module_migrations(
         )
         migration_module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(migration_module)  # type: ignore
-        yield MigrationModuleWrapper(  # type: ignore
-            name=migration_name, module=migration_module
+        yield MigrationModuleWrapper(
+            name=migration_name, module=cast(MigrationModuleType, migration_module)
         )
