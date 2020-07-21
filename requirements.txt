@@ -4,7 +4,7 @@ isort
 pytest
 freezegun
 bandit
-mypy
+mypy==0.782
 
 dataclasses
 -e .
