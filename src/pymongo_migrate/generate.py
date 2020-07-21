@@ -53,6 +53,9 @@ def generate_migration_module_in_dir(
             name = f"{name}_{slugify(description)}"
         name = name[:MAX_NAME_LEN]
     file_path = migration_dir / f"{name}.py"
+    if file_path.exists():
+        raise FileExistsError(f"{file_path} already exists")
+
     with file_path.open("w") as f:
         generate_migration_module(f, name=name, *args, **kwargs)  # type: ignore
     return file_path
