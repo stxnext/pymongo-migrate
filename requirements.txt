@@ -1,6 +1,6 @@
 black == 19.10b0
 flake8
-isort
+isort==5.1.4
 pytest
 freezegun
 bandit
