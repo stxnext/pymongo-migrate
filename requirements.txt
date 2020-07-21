@@ -3,7 +3,7 @@ flake8
 isort
 pytest
 freezegun
-bandit
+bandit==1.6.2
 mypy
 
 dataclasses
