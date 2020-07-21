@@ -7,7 +7,7 @@ from pymongo_migrate.mongo_migrate import MongoMigrate
 
 @freezegun.freeze_time("2019-02-25 01:13:56")
 def test_generate(mongo_migrate, tmp_path):
-    tmp_migrations_path = tmp_path / "migrations"
+    tmp_migrations_path = tmp_path / "test_generate_migrations"
     mongo_migrate.migrations_dir = str(tmp_migrations_path)
     filename = mongo_migrate.generate().name
     assert filename == "20190225011356.py"
@@ -76,3 +76,8 @@ def downgrade(db: "pymongo.database.Database"):
     pass
 '''
         )
+
+
+def test_generate_should_fail_when_name_collides(mongo_migrate):
+    with pytest.raises(FileExistsError):
+        mongo_migrate.generate("20181123000000_gt_500")
