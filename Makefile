@@ -5,7 +5,7 @@ init:
 	pipenv install --dev
 
 format:
-	$(run) isort -rc .
+	$(run) isort .
 	$(run) black .
 	$(run) flake8 .
 	$(run) mypy src
@@ -26,7 +26,7 @@ publish:
 	rm -fr build dist .egg requests.egg-info
 
 travis:
-	$(run) isort -rc -c .
+	$(run) isort -c .
 	$(run) black --check .
 	$(run) flake8 .
 	$(run) mypy src
