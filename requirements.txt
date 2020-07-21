@@ -1,7 +1,7 @@
 black == 19.10b0
 flake8
 isort
-pytest
+pytest==5.4.3
 freezegun
 bandit
 mypy
