@@ -37,7 +37,7 @@ Use `pymongo-migrate command --help` to learn more about particular command.
 
 Contributions and raising Issues is welcome; standard netiquette rules apply.
 
-Use `pipenv install --dev` to setup the project for development.
+Use `make init` to setup the project for development.
 To format your code & test your changes run:
 
     make check
