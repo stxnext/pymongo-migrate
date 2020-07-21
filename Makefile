@@ -1,8 +1,7 @@
-run=pipenv run
+run=
 
 init:
-	pip install pipenv --upgrade
-	pipenv install --dev
+	pip install -r requirements.txt
 
 format:
 	$(run) isort .

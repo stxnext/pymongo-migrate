@@ -1,0 +1,10 @@
+black == 19.10b0
+flake8
+isort
+pytest
+freezegun
+bandit
+mypy
+
+dataclasses
+-e .
