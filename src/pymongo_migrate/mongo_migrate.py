@@ -157,7 +157,7 @@ class MongoMigrate:
                 continue
             self.logger.info("Running downgrade migration %r", migration.name)
             exec_time = _measure_time(migration.downgrade, self.db)
-            self.logger.info("Execution time of %r: %s", migration.name, exec_time
+            self.logger.info("Execution time of %r: %s", migration.name, exec_time)
             migration_state.applied = None
             self.set_state(migration_state)
 
