@@ -32,6 +32,13 @@ def _deserialize(data, cls):
     return cls(**data)
 
 
+def _measure_time(func, argument):
+    start = time.clock() 
+    func(argument)
+    elapsed = time.clock() - start
+    return elapsed
+
+
 @dataclass
 class MongoMigrate:
     client: pymongo.MongoClient
@@ -123,7 +130,8 @@ class MongoMigrate:
                 )
                 continue
             self.logger.info("Running upgrade migration %r", migration.name)
-            migration.upgrade(self.db)
+            exec_time = _measure_time(migration.upgrade, self.db)
+            self.logger.info("Execution time of %r: %s", migration.name, exec_time)
             migration_state.applied = dt()
             self.set_state(migration_state)
             if migration.name == migration_name:
@@ -148,7 +156,8 @@ class MongoMigrate:
                 )
                 continue
             self.logger.info("Running downgrade migration %r", migration.name)
-            migration.downgrade(self.db)
+            exec_time = _measure_time(migration.downgrade, self.db)
+            self.logger.info("Execution time of %r: %s", migration.name, exec_time
             migration_state.applied = None
             self.set_state(migration_state)
 
