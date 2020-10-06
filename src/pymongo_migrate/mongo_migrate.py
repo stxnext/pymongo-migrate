@@ -115,7 +115,7 @@ class MongoMigrate:
             self.logger.debug("Migration target already applied, assuming downgrade")
             self.downgrade(migration_name)
         else:
-            self.logger.debug("Migration target already applied, assuming upgrade")
+            self.logger.debug("Migration target not applied, assuming upgrade")
             self.upgrade(migration_name)
 
     def upgrade(self, migration_name: Optional[str] = None):
