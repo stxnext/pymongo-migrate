@@ -149,7 +149,7 @@ class MongoMigrate:
             self.logger.info("Running upgrade migration %r", migration.name)
             with MeasureTime() as mt:
                 migration.upgrade(self.db)
-                self.logger.info(f"Execution time of {migration.name}: {mt.elapsed()}s")
+                self.logger.info(f"Execution time of {migration.name}: {mt.elapsed}s")
             migration_state.applied = dt()
             self.set_state(migration_state)
             if migration.name == migration_name:
@@ -176,7 +176,7 @@ class MongoMigrate:
             self.logger.info("Running downgrade migration %r", migration.name)
             with MeasureTime() as mt:
                 migration.downgrade(self.db)
-                self.logger.info(f"Execution time of {migration.name}: {mt.elapsed()}s")
+                self.logger.info(f"Execution time of {migration.name}: {mt.elapsed}s")
             migration_state.applied = None
             self.set_state(migration_state)
 
