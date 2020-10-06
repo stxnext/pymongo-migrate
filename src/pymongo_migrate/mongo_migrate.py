@@ -34,6 +34,14 @@ def _deserialize(data, cls):
 
 
 class MeasureTime:
+    """
+    Class to measure the time of execution of code block.
+    usage:
+
+     with MeasureTime() as mt:
+         # code block ...
+         print(f"Execution time: {mt.elapsed}s")
+    """
     def __init__(self):
         self.start = None
         self.stop = None
