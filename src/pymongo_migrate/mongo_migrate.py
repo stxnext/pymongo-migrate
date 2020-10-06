@@ -1,4 +1,3 @@
-import contextlib
 import datetime
 import logging
 import time
@@ -34,14 +33,27 @@ def _deserialize(data, cls):
     return cls(**data)
 
 
-@contextlib.contextmanager
-def measure_time():
-    start = time.time()
+class MeasureTime:
+    def __init__(self):
+        self.start = None
+        self.stop = None
 
-    def elapsed():
-        return time.time() - start
+    @staticmethod
+    def time() -> float:
+        return time.time()
 
-    yield elapsed
+    @property
+    def elapsed(self) -> Optional[float]:
+        if self.start is None:
+            return None
+        return (self.stop or self.time()) - self.start
+
+    def __enter__(self):
+        self.start = self.time()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.stop = self.time()
 
 
 @dataclass
@@ -135,9 +147,9 @@ class MongoMigrate:
                 )
                 continue
             self.logger.info("Running upgrade migration %r", migration.name)
-            with measure_time as elapsed:
+            with MeasureTime() as mt:
                 migration.upgrade(self.db)
-                self.logger.info(f"Execution time of {migration.name}: {elapsed()}s")
+                self.logger.info(f"Execution time of {migration.name}: {mt.elapsed()}s")
             migration_state.applied = dt()
             self.set_state(migration_state)
             if migration.name == migration_name:
@@ -162,9 +174,9 @@ class MongoMigrate:
                 )
                 continue
             self.logger.info("Running downgrade migration %r", migration.name)
-            with measure_time as elapsed:
+            with MeasureTime() as mt:
                 migration.downgrade(self.db)
-                self.logger.info(f"Execution time of {migration.name}: {elapsed()}s")
+                self.logger.info(f"Execution time of {migration.name}: {mt.elapsed()}s")
             migration_state.applied = None
             self.set_state(migration_state)
 
