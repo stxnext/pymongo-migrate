@@ -1,6 +1,8 @@
 import contextlib
 import datetime
 import logging
+import time
+
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Iterator, Optional
@@ -36,6 +38,7 @@ def _deserialize(data, cls):
 @contextlib.contextmanager
 def measure_time():
     start = time.time()
+
     def elapsed():
         return time.time() - start
 
