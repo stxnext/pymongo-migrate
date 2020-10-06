@@ -42,6 +42,7 @@ class MeasureTime:
          # code block ...
          print(f"Execution time: {mt.elapsed}s")
     """
+
     def __init__(self):
         self.start = None
         self.stop = None
