@@ -2,13 +2,12 @@ import contextlib
 import datetime
 import logging
 import time
-
-from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Iterator, Optional
 
 import pymongo
 from bson import CodecOptions
+from dataclasses import asdict, dataclass
 
 from pymongo_migrate.generate import generate_migration_module_in_dir
 from pymongo_migrate.loader import load_module_migrations
