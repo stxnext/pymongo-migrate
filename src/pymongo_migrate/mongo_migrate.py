@@ -3,6 +3,7 @@ import logging
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Iterator, Optional
+import contextlib
 
 import pymongo
 from bson import CodecOptions
@@ -32,11 +33,13 @@ def _deserialize(data, cls):
     return cls(**data)
 
 
-def _measure_time(func, argument):
-    start = time.clock() 
-    func(argument)
-    elapsed = time.clock() - start
-    return elapsed
+@contextlib.contextmanager
+def measure_time():
+    start = time.time()
+    def elapsed():
+        return time.time() - start
+
+    yield elapsed
 
 
 @dataclass
@@ -130,8 +133,9 @@ class MongoMigrate:
                 )
                 continue
             self.logger.info("Running upgrade migration %r", migration.name)
-            exec_time = _measure_time(migration.upgrade, self.db)
-            self.logger.info("Execution time of %r: %s", migration.name, exec_time)
+            with measure_time as elapsed:
+                migration.upgrade(self.db)
+                self.logger.info(f"Execution time of {migration.name}: {elapsed()}s")
             migration_state.applied = dt()
             self.set_state(migration_state)
             if migration.name == migration_name:
@@ -156,8 +160,9 @@ class MongoMigrate:
                 )
                 continue
             self.logger.info("Running downgrade migration %r", migration.name)
-            exec_time = _measure_time(migration.downgrade, self.db)
-            self.logger.info("Execution time of %r: %s", migration.name, exec_time)
+            with measure_time as elapsed:
+                migration.downgrade(self.db)
+                self.logger.info(f"Execution time of {migration.name}: {elapsed()}s")
             migration_state.applied = None
             self.set_state(migration_state)
 
