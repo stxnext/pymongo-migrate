@@ -1,9 +1,9 @@
+import contextlib
 import datetime
 import logging
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Iterator, Optional
-import contextlib
 
 import pymongo
 from bson import CodecOptions
