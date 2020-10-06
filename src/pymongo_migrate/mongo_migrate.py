@@ -33,7 +33,7 @@ def _deserialize(data, cls):
     return cls(**data)
 
 
-class MeasureTime:
+class _MeasureTime:
     """
     Class to measure the time of execution of code block.
     usage:
@@ -156,9 +156,11 @@ class MongoMigrate:
                 )
                 continue
             self.logger.info("Running upgrade migration %r", migration.name)
-            with MeasureTime() as mt:
+            with _MeasureTime() as mt:
                 migration.upgrade(self.db)
-                self.logger.info(f"Execution time of {migration.name}: {mt.elapsed}s")
+                self.logger.info(
+                    "Execution time of %r: %s seconds", migration.name, mt.elapsed
+                )
             migration_state.applied = dt()
             self.set_state(migration_state)
             if migration.name == migration_name:
@@ -183,9 +185,11 @@ class MongoMigrate:
                 )
                 continue
             self.logger.info("Running downgrade migration %r", migration.name)
-            with MeasureTime() as mt:
+            with _MeasureTime() as mt:
                 migration.downgrade(self.db)
-                self.logger.info(f"Execution time of {migration.name}: {mt.elapsed}s")
+                self.logger.info(
+                    "Execution time of %r: %s seconds", migration.name, mt.elapsed
+                )
             migration_state.applied = None
             self.set_state(migration_state)
 
