@@ -1,5 +1,6 @@
 import datetime
 import logging
+import time
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Iterator, Optional
@@ -30,6 +31,38 @@ def _deserialize(data, cls):
     data = {**data}
     del data["_id"]
     return cls(**data)
+
+
+class _MeasureTime:
+    """
+    Class to measure the time of execution of code block.
+    usage:
+
+     with MeasureTime() as mt:
+         # code block ...
+         print(f"Execution time: {mt.elapsed}s")
+    """
+
+    def __init__(self):
+        self.start = None
+        self.stop = None
+
+    @staticmethod
+    def time() -> float:
+        return time.time()
+
+    @property
+    def elapsed(self) -> Optional[float]:
+        if self.start is None:
+            return None
+        return (self.stop or self.time()) - self.start
+
+    def __enter__(self):
+        self.start = self.time()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.stop = self.time()
 
 
 @dataclass
@@ -103,7 +136,7 @@ class MongoMigrate:
             self.logger.debug("Migration target already applied, assuming downgrade")
             self.downgrade(migration_name)
         else:
-            self.logger.debug("Migration target already applied, assuming upgrade")
+            self.logger.debug("Migration target not applied, assuming upgrade")
             self.upgrade(migration_name)
 
     def upgrade(self, migration_name: Optional[str] = None):
@@ -123,7 +156,11 @@ class MongoMigrate:
                 )
                 continue
             self.logger.info("Running upgrade migration %r", migration.name)
-            migration.upgrade(self.db)
+            with _MeasureTime() as mt:
+                migration.upgrade(self.db)
+                self.logger.info(
+                    "Execution time of %r: %s seconds", migration.name, mt.elapsed
+                )
             migration_state.applied = dt()
             self.set_state(migration_state)
             if migration.name == migration_name:
@@ -148,7 +185,11 @@ class MongoMigrate:
                 )
                 continue
             self.logger.info("Running downgrade migration %r", migration.name)
-            migration.downgrade(self.db)
+            with _MeasureTime() as mt:
+                migration.downgrade(self.db)
+                self.logger.info(
+                    "Execution time of %r: %s seconds", migration.name, mt.elapsed
+                )
             migration_state.applied = None
             self.set_state(migration_state)
 
