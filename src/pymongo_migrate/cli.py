@@ -141,7 +141,7 @@ def upgrade(mongo_migrate, migration=None):
 
 @cli.command(short_help="apply necessary downgrades to reach target migration")
 @mongo_migration_options
-@click.argument("migration")
+@click.argument("migration", required=False)
 def downgrade(mongo_migrate, migration):
     mongo_migrate.downgrade(migration)
 
