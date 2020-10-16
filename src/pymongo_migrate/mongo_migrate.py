@@ -116,7 +116,7 @@ class MongoMigrate:
             raise ValueError(f"No such migration: {migration_name}")
         return migration
 
-    def migrate(self, migration_name: Optional[str] = None):
+    def migrate(self, migration_name: Optional[str] = None, fake: bool = False):
         """
         Automatically detects if upgrades or downgrades should be applied to
         reach target migration state.
@@ -124,28 +124,34 @@ class MongoMigrate:
         :param migration_name:
             target migration
             None if all upgrades should be applied
+        :param fake:
+            If True, only migration state in database will be modified and
+            no actual migration will be run.
         """
         if migration_name is None:
             self.logger.debug("Migration target not specified, assuming upgrade")
-            self.upgrade()
+            self.upgrade(fake=fake)
             return
         migration = self._check_for_migration(migration_name)
         assert migration, "No matching migration, something went wrong"
         migration_state = self.get_state(migration)
         if migration_state.applied:
             self.logger.debug("Migration target already applied, assuming downgrade")
-            self.downgrade(migration_name)
+            self.downgrade(migration_name, fake)
         else:
             self.logger.debug("Migration target not applied, assuming upgrade")
-            self.upgrade(migration_name)
+            self.upgrade(migration_name, fake)
 
-    def upgrade(self, migration_name: Optional[str] = None):
+    def upgrade(self, migration_name: Optional[str] = None, fake: bool = False):
         """
         Apply upgrade migrations.
 
         :param migration_name:
             name of migration up to which (including) upgrades should be executed
             None if all migrations should be run
+        :param fake:
+            If True, only migration state in database will be modified and
+            no actual migration will be run.
         """
         self._check_for_migration(migration_name)
         for migration in self.graph:
@@ -155,24 +161,30 @@ class MongoMigrate:
                     "Migration %r already applied, skipping", migration.name
                 )
                 continue
-            self.logger.info("Running upgrade migration %r", migration.name)
-            with _MeasureTime() as mt:
-                migration.upgrade(self.db)
-                self.logger.info(
-                    "Execution time of %r: %s seconds", migration.name, mt.elapsed
-                )
+            if fake:
+                self.logger.info("Fake running upgrade migration %r", migration.name)
+            else:
+                self.logger.info("Running upgrade migration %r", migration.name)
+                with _MeasureTime() as mt:
+                    migration.upgrade(self.db)
+                    self.logger.info(
+                        "Execution time of %r: %s seconds", migration.name, mt.elapsed
+                    )
             migration_state.applied = dt()
             self.set_state(migration_state)
             if migration.name == migration_name:
                 break
 
-    def downgrade(self, migration_name: Optional[str]):
+    def downgrade(self, migration_name: Optional[str] = None, fake: bool = False):
         """
         Reverse migrations.
 
         :param migration_name:
             name of migration down to which (excluding) downgrades should be executed
             None if all migrations should be run
+        :param fake:
+            If True, only migration state in database will be modified and
+            no actual migration will be run.
         """
         self._check_for_migration(migration_name)
         for migration in reversed(list(self.get_migrations())):
@@ -184,12 +196,15 @@ class MongoMigrate:
                     "Migration %r not yet applied, skipping", migration.name
                 )
                 continue
-            self.logger.info("Running downgrade migration %r", migration.name)
-            with _MeasureTime() as mt:
-                migration.downgrade(self.db)
-                self.logger.info(
-                    "Execution time of %r: %s seconds", migration.name, mt.elapsed
-                )
+            if fake:
+                self.logger.info("Fake running downgrade migration %r", migration.name)
+            else:
+                self.logger.info("Running downgrade migration %r", migration.name)
+                with _MeasureTime() as mt:
+                    migration.downgrade(self.db)
+                    self.logger.info(
+                        "Execution time of %r: %s seconds", migration.name, mt.elapsed
+                    )
             migration_state.applied = None
             self.set_state(migration_state)
 
