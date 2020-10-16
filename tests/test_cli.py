@@ -73,6 +73,15 @@ def test_migrate(invoker, db, db_uri, migrations_dir):
     assert "Running upgrade migration '20150612230153'" in result.stdout
 
 
+def test_migrate_fake(invoker, db, db_uri, migrations_dir):
+    result = invoker(
+        ["migrate", "-u", db_uri, "-m", migrations_dir, "--fake"],
+        catch_exceptions=False,
+    )
+
+    assert "Fake running upgrade migration '20150612230153'" in result.stdout
+
+
 def test_migrate_verbose(invoker, db, db_uri, migrations_dir):
     result = invoker(
         ["migrate", "-u", db_uri, "-m", migrations_dir, "-vv"], catch_exceptions=False

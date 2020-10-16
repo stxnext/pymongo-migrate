@@ -72,8 +72,15 @@ def mongo_migrate_decor(f):
     return wrap_with_client
 
 
+def _decorate(f, *decorators):
+    for decorator in reversed(decorators):
+        f = decorator(f)
+    return f
+
+
 def mongo_migration_options(f):
-    decorators = [
+    return _decorate(
+        f,
         click.option(
             "-u",
             "--uri",
@@ -99,10 +106,7 @@ def mongo_migration_options(f):
         ),
         click.option("-v", "--verbose", count=True),
         mongo_migrate_decor,
-    ]
-    for decorator in reversed(decorators):
-        f = decorator(f)
-    return f
+    )
 
 
 @cli.command(short_help="show migrations and their status")
@@ -123,27 +127,33 @@ def show(mongo_migrate):
         click.echo(f"{migration.name.ljust(name_len_max)}\t" + applied_text)
 
 
+def migrate_cmd_options(f):
+    return _decorate(
+        f,
+        mongo_migration_options,
+        click.argument("migration", required=False),
+        click.option("--fake", is_flag=True),
+    )
+
+
 @cli.command(
     short_help="automagically apply necessary upgrades or downgrades to reach target migration"
 )
-@mongo_migration_options
-@click.argument("migration", required=False)
-def migrate(mongo_migrate, migration=None):
-    mongo_migrate.migrate(migration)
+@migrate_cmd_options
+def migrate(mongo_migrate, migration=None, fake=False):
+    mongo_migrate.migrate(migration, fake=fake)
 
 
 @cli.command(short_help="apply necessary upgrades to reach target migration")
-@mongo_migration_options
-@click.argument("migration", required=False)
-def upgrade(mongo_migrate, migration=None):
-    mongo_migrate.upgrade(migration)
+@migrate_cmd_options
+def upgrade(mongo_migrate, migration=None, fake=False):
+    mongo_migrate.upgrade(migration, fake=fake)
 
 
 @cli.command(short_help="apply necessary downgrades to reach target migration")
-@mongo_migration_options
-@click.argument("migration", required=False)
-def downgrade(mongo_migrate, migration):
-    mongo_migrate.downgrade(migration)
+@migrate_cmd_options
+def downgrade(mongo_migrate, migration, fake=False):
+    mongo_migrate.downgrade(migration, fake=fake)
 
 
 @cli.command()
