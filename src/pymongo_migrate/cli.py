@@ -1,5 +1,6 @@
 import logging
 import os
+import urllib.parse
 from functools import wraps
 from pprint import pformat
 from typing import Optional
@@ -59,6 +60,18 @@ def get_logger(verbose: int):
 def mongo_migrate_decor(f):
     @wraps(f)
     def wrap_with_client(uri, migrations, collection, verbose, *args, **kwargs):
+        # Percent-encode the username and password, if provided.
+        uri = urllib.parse.urlparse(uri)
+        if uri.username:
+            uri = uri._replace(
+                netloc="%s:%s@%s"
+                % (
+                    urllib.parse.quote_plus(uri.username),
+                    urllib.parse.quote_plus(uri.password),
+                    uri.hostname,
+                ),
+            )
+        uri = urllib.parse.urlunparse(uri)
         mongo_migrate = MongoMigrate(
             client=pymongo.MongoClient(
                 uri, event_listeners=[CommandLogger(verbose=verbose)]
