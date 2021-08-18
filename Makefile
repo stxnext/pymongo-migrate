@@ -24,7 +24,7 @@ publish:
 	twine upload dist/*
 	rm -fr build dist .egg requests.egg-info
 
-travis:
+ci:
 	$(run) isort -c .
 	$(run) black --check .
 	$(run) flake8 .
