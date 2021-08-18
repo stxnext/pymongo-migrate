@@ -16,6 +16,7 @@ def load_module_migrations(
         spec = importlib.util.spec_from_file_location(
             f"{namespace}.{migration_name}", str(module_file)
         )
+        assert spec
         migration_module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(migration_module)  # type: ignore
         yield MigrationModuleWrapper(
