@@ -4,6 +4,7 @@ init:
 	pip install -r requirements.txt
 
 format:
+	$(run) pyupgrade --py36-plus ./**/*.py
 	$(run) isort .
 	$(run) black .
 	$(run) flake8 .
