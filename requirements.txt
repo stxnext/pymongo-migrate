@@ -6,5 +6,4 @@ freezegun
 bandit
 mypy
 
-dataclasses
 -e .
