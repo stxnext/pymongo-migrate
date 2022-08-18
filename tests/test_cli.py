@@ -1,6 +1,10 @@
+import sys
+from pathlib import Path
+
 import freezegun
 import pytest
 from click.testing import CliRunner
+from utils import generate_str
 
 from pymongo_migrate.cli import cli
 
@@ -88,3 +92,18 @@ def test_migrate_verbose(invoker, db, db_uri, migrations_dir):
     )
 
     assert "Command update#" in result.stdout
+
+
+def test_that_arg_project_root_is_added_to_python_path(
+    invoker,
+    db,
+    db_uri,
+    migrations_dir,
+):
+    rnd_path = Path(generate_str())
+    assert str(rnd_path) not in sys.path
+    invoker(
+        ["show", "-u", db_uri, "-m", migrations_dir, "-p", rnd_path],
+        catch_exceptions=False,
+    )
+    assert str(rnd_path) in sys.path

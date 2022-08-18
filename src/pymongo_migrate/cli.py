@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 from functools import wraps
 from pprint import pformat
 from typing import Optional
@@ -72,6 +73,16 @@ def mongo_migrate_decor(f):
     return wrap_with_client
 
 
+def add_project_root_to_python_path_decorator(f):
+    @wraps(f)
+    def inner(project_root, *args, **kwargs):
+        if project_root is not None:
+            sys.path.append(project_root)
+        return f(*args, **kwargs)
+
+    return inner
+
+
 def _decorate(f, *decorators):
     for decorator in reversed(decorators):
         f = decorator(f)
@@ -105,6 +116,15 @@ def mongo_migration_options(f):
             show_default=True,
         ),
         click.option("-v", "--verbose", count=True),
+        click.option(
+            "-p",
+            "--project_root",
+            default=None,
+            envvar="PYMONGO_MIGRATE_PROJECT_ROOT",
+            help="project_root will be added to python path",
+            show_default=True,
+        ),
+        add_project_root_to_python_path_decorator,
         mongo_migrate_decor,
     )
 
