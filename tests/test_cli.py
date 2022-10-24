@@ -50,6 +50,8 @@ def test_generate(invoker, db, db_uri, tmp_path):
 """
 Migration description here!
 """
+import pymongo
+
 name = '20190203040506'
 dependencies = []
 
