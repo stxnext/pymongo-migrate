@@ -7,6 +7,8 @@ MIGRATION_MODULE_TMPL = '''\
 """
 {description}
 """
+import pymongo
+
 name = {name!r}
 dependencies = {dependencies!r}
 
