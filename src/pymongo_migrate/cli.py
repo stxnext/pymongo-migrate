@@ -58,11 +58,13 @@ def get_logger(verbose: int):
 
 def mongo_migrate_decor(f):
     @wraps(f)
-    def wrap_with_client(uri, migrations, collection, verbose, *args, **kwargs):
+    def wrap_with_client(uri, database, migrations, collection, verbose,
+                         *args, **kwargs):
         mongo_migrate = MongoMigrate(
             client=pymongo.MongoClient(
                 uri, event_listeners=[CommandLogger(verbose=verbose)]
             ),
+            database=database,
             migrations_dir=migrations,
             migrations_collection=collection,
             logger=get_logger(verbose),
@@ -87,6 +89,13 @@ def mongo_migration_options(f):
             default=None,
             envvar="PYMONGO_MIGRATE_URI",
             help="mongodb URI",
+        ),
+        click.option(
+            "-d",
+            "--database",
+            default=None,
+            envvar="PYMONGO_MIGRATE_DATABASE",
+            help="mongodb database on which to apply migrations",
         ),
         click.option(
             "-m",
