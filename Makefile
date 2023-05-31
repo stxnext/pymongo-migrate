@@ -4,12 +4,12 @@ init:
 	pip install -r requirements.txt
 
 format:
-	$(run) pyupgrade --py36-plus ./**/*.py
+	$(run) pyupgrade --py38-plus ./**/*.py
 	$(run) isort .
 	$(run) black .
 	$(run) flake8 .
 	$(run) mypy src
-	$(run) bandit -c .bandit.yml -r .
+	$(run) bandit -c .bandit.yml -r src
 
 test:
 	docker-compose up -d mongo
@@ -30,5 +30,5 @@ ci:
 	$(run) black --check .
 	$(run) flake8 .
 	$(run) mypy src
-	$(run) bandit -c .bandit.yml -r .
+	$(run) bandit -c .bandit.yml -r src
 	$(run) pytest
