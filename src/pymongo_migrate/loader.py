@@ -8,7 +8,6 @@ from pymongo_migrate.migrations import MigrationModuleType, MigrationModuleWrapp
 def load_module_migrations(
     path: Path, namespace=f"{__name__}._migrations"
 ) -> Generator[MigrationModuleWrapper, None, None]:
-
     for module_file in path.glob("*.py"):
         if module_file.name.startswith("__"):
             continue
