@@ -58,8 +58,9 @@ def get_logger(verbose: int):
 
 def mongo_migrate_decor(f):
     @wraps(f)
-    def wrap_with_client(uri, database, migrations, collection, verbose,
-                         *args, **kwargs):
+    def wrap_with_client(
+        uri, database, migrations, collection, verbose, *args, **kwargs
+    ):
         mongo_migrate = MongoMigrate(
             client=pymongo.MongoClient(
                 uri, event_listeners=[CommandLogger(verbose=verbose)]

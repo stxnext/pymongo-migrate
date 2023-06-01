@@ -89,7 +89,9 @@ class MongoMigrate:
 
     @property
     def db_collection(self):
-        return self.client.get_database(self.database)[self.migrations_collection].with_options(
+        return self.client.get_database(self.database)[
+            self.migrations_collection
+        ].with_options(
             codec_options=CodecOptions(tz_aware=True, tzinfo=datetime.timezone.utc)
         )
 
