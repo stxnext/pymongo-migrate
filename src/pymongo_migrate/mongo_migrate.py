@@ -68,6 +68,7 @@ class _MeasureTime:
 @dataclass
 class MongoMigrate:
     client: pymongo.MongoClient
+    database: str
     migrations_dir: str = "./pymongo_migrations"
     migrations_collection: str = "pymongo_migrate"
     logger: logging.Logger = LOGGER
@@ -84,11 +85,13 @@ class MongoMigrate:
 
     @property
     def db(self):
-        return self.client.get_database()
+        return self.client.get_database(self.database)
 
     @property
     def db_collection(self):
-        return self.client.get_database()[self.migrations_collection].with_options(
+        return self.client.get_database(self.database)[
+            self.migrations_collection
+        ].with_options(
             codec_options=CodecOptions(tz_aware=True, tzinfo=datetime.timezone.utc)
         )
 

@@ -43,7 +43,7 @@ def empty_migrations_dir(tmp_path):
 @pytest.fixture
 def mongo_migrate_with_empty_dir(db_uri, db_name, db, empty_migrations_dir):
     mm = MongoMigrate(
-        pymongo.MongoClient(db_uri), migrations_dir=str(empty_migrations_dir)
+        pymongo.MongoClient(db_uri), db_name, migrations_dir=str(empty_migrations_dir)
     )
     yield mm
     mm.client.close()
