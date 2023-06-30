@@ -10,7 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Official support for Python 3.11
-- Add support for specifying database for migration while authenticating against different database
+- Add support for specifying database for migration while authenticating against different database #41
+
+### Fixed
+
+- Ensure that the generate command creates files that pass mypy checks #40
 
 ### Removed
 
