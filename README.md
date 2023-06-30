@@ -1,6 +1,6 @@
 # pymongo-migrate
 
-[![Build Status](https://travis-ci.org/stxnext/pymongo-migrate.svg?branch=master)](https://travis-ci.org/stxnext/pymongo-migrate)
+![Build Status](https://github.com/stxnext/pymongo-migrate/actions/workflows/test.yml/badge.svg)
 [![PyPI version](https://badge.fury.io/py/pymongo-migrate.svg)](https://badge.fury.io/py/pymongo-migrate)
 
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pymongo-migrate.svg)
