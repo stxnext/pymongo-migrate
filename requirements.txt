@@ -1,10 +1,8 @@
-black
-flake8
-isort
-pytest
-pyupgrade
-freezegun
 bandit
+black
+freezegun
 mypy
+pytest
+ruff
 
 -e .

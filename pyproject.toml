@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pymongo-migrate"
+version = "1.0.0"
+description = "MongoDB data migration tool in Python"
+license = {text="Apache Software License"}
+readme = "README.md"  # assuming you have a README.md file
+requires-python = ">=3.8"
+keywords = ["mongo", "mongodb", "pymongo", "migrate", "migration"]
+classifiers = [
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Database",
+]
+
+dependencies = [
+"pymongo>=3.7.2",
+    "Click>=7",
+]
+
+[project.urls]
+Homepage = "https://github.com/stxnext/pymongo-migrate"
+Changelog = "https://github.com/stxnext/pymongo-migrate/blob/main/CHANGELOG.md"
+
+[project.scripts]
+pymongo-migrate = "pymongo_migrate.cli:cli"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+exclude = ["tests"]
+
+[tool.ruff]
+select = ["E", "F", "I", "UP"]
+ignore = ["E203", "E266", "E501"]
+exclude = [".git", "__pycache__", ".venv", "build", "dist"]
+
+[tool.pytest.env]
+env_files = ".env"
+
+[tool.mypy]
+ignore_missing_imports = true

@@ -1,7 +1,6 @@
 import freezegun
 import pymongo
 import pytest
-
 from pymongo_migrate.mongo_migrate import MongoMigrate
 
 

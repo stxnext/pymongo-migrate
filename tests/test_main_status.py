@@ -1,5 +1,4 @@
 import pytest
-
 from pymongo_migrate.migrations import Migration, MigrationState
 from pymongo_migrate.mongo_migrate import dt
 

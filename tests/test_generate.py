@@ -1,5 +1,4 @@
 import pytest
-
 from pymongo_migrate.generate import slugify
 
 

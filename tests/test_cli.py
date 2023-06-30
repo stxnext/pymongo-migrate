@@ -1,7 +1,6 @@
 import freezegun
 import pytest
 from click.testing import CliRunner
-
 from pymongo_migrate.cli import cli
 
 

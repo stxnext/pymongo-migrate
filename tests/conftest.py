@@ -7,7 +7,6 @@ from typing import Dict
 import pymongo
 import pytest
 from bson import CodecOptions
-
 from pymongo_migrate.mongo_migrate import MongoMigrate
 
 TEST_DIR = Path(__file__).parent

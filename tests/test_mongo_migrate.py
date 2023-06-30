@@ -2,7 +2,6 @@ from collections import defaultdict
 from unittest.mock import Mock, patch
 
 import freezegun
-
 from pymongo_migrate.mongo_migrate import dt
 
 

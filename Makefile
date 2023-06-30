@@ -4,10 +4,8 @@ init:
 	pip install -r requirements.txt
 
 format:
-	$(run) pyupgrade --py38-plus ./**/*.py
-	$(run) isort .
 	$(run) black .
-	$(run) flake8 .
+	$(run) ruff check --fix .
 	$(run) mypy src
 	$(run) bandit -c .bandit.yml -r src
 
@@ -19,16 +17,17 @@ test:
 check: format test
 	@echo "Everything ok!"
 
-publish:
-	pip install twine
-	python setup.py sdist
-	twine upload dist/*
-	rm -fr build dist .egg requests.egg-info
+clean:
+	rm -fr build dist .egg src/pymongo_migrate.egg-info
+
+publish: clean
+	python -m pip install twine build
+	python -m build
+	python -m twine upload dist/*
 
 ci:
-	$(run) isort -c .
 	$(run) black --check .
-	$(run) flake8 .
+	$(run) ruff check .
 	$(run) mypy src
 	$(run) bandit -c .bandit.yml -r src
 	$(run) pytest
