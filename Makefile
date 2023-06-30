@@ -23,6 +23,7 @@ clean:
 publish: clean
 	python -m pip install twine build
 	python -m build
+	python -m twine upload --repository testpypi dist/*
 	python -m twine upload dist/*
 
 ci:
