@@ -20,6 +20,8 @@ def test_generate(mongo_migrate, tmp_path):
 """
 Migration description here!
 """
+import pymongo
+
 name = '20190225011356'
 dependencies = ['20181123000000_gt_500']
 
@@ -63,6 +65,8 @@ def test_generate_initial_migration(mongo_migrate_with_empty_dir, empty_migratio
 """
 Migration description here!
 """
+import pymongo
+
 name = '20190203040506'
 dependencies = []
 
